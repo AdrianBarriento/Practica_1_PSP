@@ -4,50 +4,34 @@ import com.github.javafaker.Faker;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 public class HilosInsertar extends Thread{
-    private Connection conexion;
-    private Statement consulta;
-    private int registrosXhilo;
-    private Semaphore semaforo;
+    private final Connection conexion;
+    private final int registrosXhilo;
 
-
-    //variables para llenarlas con datos aleatorios y llenar la bbdd, y clase Faker para generar estos datos
-    private String email;
-    private int sueldo;
+    //instanciamos la clase Faker que sirve para generar datos aleatorios
     Faker faker = new Faker();
-    public HilosInsertar(Connection conexion, Statement consulta, int registrosXhilo, Semaphore semaforo) {
+
+    public HilosInsertar(Connection conexion,  int registrosXhilo) {
         this.conexion = conexion;
-        this.consulta = consulta;
         this.registrosXhilo = registrosXhilo;
-        this.semaforo = semaforo;
     }
 
-    private void insertarRegistro(){
-
-    }
     @Override
     public void run() {
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement;
         try {
-            semaforo.acquire();
+            //insertamos mediante un preparedstatement los registros necesarios en la base de datos, a través de un  hilo
             preparedStatement = conexion.prepareStatement("INSERT INTO empleados (EMAIL, INGRESOS) VALUES (?,?)");
             for (int i=0; i < registrosXhilo; i++){
-                email = faker.name().username()+"@gmail.com";
-                sueldo = (int) (Math.random()*1000)+10;
+                String email = faker.name().username() + "@gmail.com";
+                int sueldo = (int) (Math.random() * 1000) + 10;
                 preparedStatement.setString(1, email);
                 preparedStatement.setInt(2, sueldo);
                 preparedStatement.executeUpdate();
             }
-            semaforo.release();
-            TimeUnit.MILLISECONDS.sleep(15);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("No se han podido insertar los datos");
         }
     }
 }
