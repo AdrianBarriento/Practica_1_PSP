@@ -6,7 +6,13 @@
   en tantos hilos como el usuario indique.
   ***
  #### INSTRUCCIONES
-  Para iniciar el programa, basta con ejecutar el archivo jar del repositorio en con la Máquina Virtual de Java. 
+  Para iniciar el programa, basta con ejecutar el archivo jar del repositorio con la Máquina Virtual de Java a través de la cmd.
+  
+  ```java
+  
+    java -jar <ruta del archivo>.jar
+    
+   ```
   ***
  #### HERRAMIENTAS UTILIZADAS
   - IntelliJ IDEA
